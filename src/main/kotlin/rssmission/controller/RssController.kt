@@ -20,24 +20,26 @@ class RssController(
 
     suspend fun getPosts(checksUpdate: Boolean = false): List<Post> =
         coroutineScope {
-            println("[getPosts 1] ${this.coroutineContext}")
-
             /** 의도적으로 별도의 Context를 사용하면
-             * Test 함수와 다른 Context에서 동작하여 delay가 무시되지 않는다
-             * (원래 Test함수는 delay를 무시하게 설계됨)
+             * Test 함수와 다른 Context에서 동작하여 delay가 실제로 동작
+             * (원래 Test함수는 delay를 무시하게 설계됨,
+             * delay 이후에 currentTime으로 시간 출력 시 delay 설정한 시간 값만큼 더해서 출력은 된다!)
              * */
 
             withContext(ioDispatcher) {
-//                println("[getPosts 2] ${Thread.currentThread().name}")
-//                println("[getPosts 2] ${this@coroutineScope.coroutineContext}")
-//                delay(10000L)
+                // delay(10000L)
+
+                /** test 코드에서 주입한 dispatcher 사용 시 delay 만큼 실제 기다리는 동작은 무시된다!(가상으로 시간을 지나가게 함)*/
 
                 val totalList =
                     postServiceList.map { async { it.getPosts() } }
                         .awaitAll()
                         .flatten()
 
-                if (!checksUpdate) originalPosts = totalList
+                if (!checksUpdate) {
+                    originalPosts = totalList
+                }
+
                 totalList
             }
         }
