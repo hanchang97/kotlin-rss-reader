@@ -55,15 +55,25 @@ class RssController(
     }
 
     fun printInputMessage() {
-        rssView.printInputMessage()
+        rssView.printContent("검색어를 입력하세요 (없으면 전체 출력): ")
     }
 
     fun printPosts(postList: List<Post>) {
-        rssView.printPostList(postList)
+        postList.forEachIndexed { index, post ->
+            rssView.printContent("[${index + 1}] ${post.title} (${post.date}) - ${post.link} - ${post.company}")
+        }
+
+        rssView.printContent("")
     }
 
     fun printNewPosts(postList: List<Post>) {
-        rssView.printNewPostList(postList)
+        rssView.printContent("새로운 글이 등록되었습니다!")
+
+        postList.forEachIndexed { _, post ->
+            rssView.printContent("[NEW] ${post.title} (${post.date}) - ${post.link} - ${post.company}")
+        }
+
+        rssView.printContent("")
     }
 
     fun readInputContent(): String {
